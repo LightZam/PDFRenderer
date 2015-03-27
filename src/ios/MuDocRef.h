@@ -2,11 +2,13 @@
 
 #include "mupdf/fitz.h"
 
-@interface MuDocRef : NSObject
-{
+NSData* buffer;
+
+@interface MuDocRef : NSObject {
 @public
-	fz_document *doc;
+	fz_document* doc;
 	bool interactive;
 }
--(id) initWithFilename:(char *)aFilename;
+- (id) initWithFilename: (char *)aFilename;
+- (id) initWithBuffer: (NSData*)data magic: (char*)magic;
 @end

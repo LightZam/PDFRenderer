@@ -8,9 +8,9 @@
 
 import Foundation
 
-@objc(MuPDF)
-class MuPDF : CDVPlugin {
-    var core: MuPDFCore?
+@objc(PDFRenderer)
+class PDFRenderer : CDVPlugin {
+    var core: PDFRendererCore?
     
     let DataBin:Int = 0
     let DataUrl:Int = 1
@@ -35,7 +35,7 @@ class MuPDF : CDVPlugin {
     
     override
     init!(webView theWebView: UIWebView!) {
-        self.core = MuPDFCore()
+        self.core = PDFRendererCore()
         self.fileName = ""
         self.filePath = ""
         self.numberOfPage = 0
@@ -65,6 +65,7 @@ class MuPDF : CDVPlugin {
                     }
                 }
             }
+
             self.commandDelegate.sendPluginResult(pluginResult, callbackId: command.callbackId)
         })
     }
@@ -84,18 +85,42 @@ class MuPDF : CDVPlugin {
                 self.commandDelegate.sendPluginResult(pluginResult, callbackId: command.callbackId)
                 return
             }
-            var page = command.arguments[0] as Int
-            var width = command.arguments[1] as Int
-            var height = command.arguments[2] as Int
-            var patchX = command.arguments[3] as Int
-            var patchY = command.arguments[4] as Int
-            var patchWidth = command.arguments[5] as Int
-            var patchHeight = command.arguments[6] as Int
-            var quality = command.arguments[7] as Int
-            var encodingType = command.arguments[8] as Int
-            var destinationType = command.arguments[9] as Int
+            let index = command.arguments[0] as NSNumber
+            var pageSize: CGSize = self.core!.getPageSize(index.intValue)
+            var patchRect: CGRect = CGRect()
+            pageSize.width = command.arguments[1] as Int == -1 ? pageSize.width : command.arguments[1] as CGFloat
+            pageSize.height = command.arguments[2] as Int == -1 ? pageSize.height : command.arguments[2] as CGFloat
+            patchRect.origin.x = command.arguments[3] as CGFloat
+            patchRect.origin.y = command.arguments[4] as CGFloat
+            patchRect.size.width = command.arguments[5] as Int == -1 ? pageSize.width : command.arguments[5] as CGFloat
+            patchRect.size.height = command.arguments[6] as Int == -1 ? pageSize.height : command.arguments[6] as CGFloat
+            let quality = command.arguments[7] as CGFloat
+            let encodingType = command.arguments[8] as Int
+            let destinationType = command.arguments[9] as Int
+            self.currentPage = index.integerValue
+            var image: UIImage? = self.core!.drawPage(index.intValue, pageSize: pageSize, patchRect: patchRect)
+            var pluginResult: CDVPluginResult? = nil
+            var data: NSData
+            var format:String
             
-            var pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: "message")
+            if encodingType == self.Jpeg {
+                data = UIImageJPEGRepresentation(image, quality)
+                format = ".jpeg"
+            } else {
+                data = UIImagePNGRepresentation(image)
+                format = ".png"
+            }
+            
+            if destinationType == self.DataBin {            // array buffer
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsArrayBuffer: data)
+            } else if destinationType == self.DataUrl {     // base64
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: data.base64EncodedString())
+            } else if destinationType == self.FileUri {     // file path
+                var path: String = NSHomeDirectory() + "/Documents/" + String(self.currentPage) + format
+                data.writeToFile(path, atomically: true)
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: path)
+            }
+            
             self.commandDelegate.sendPluginResult(pluginResult, callbackId: command.callbackId)
         })
     }
@@ -136,7 +161,7 @@ class MuPDF : CDVPlugin {
         var result:Dictionary<String, AnyObject> = Dictionary()
         result[self.NumberOfPage] = self.numberOfPage
         result[self.FileName] = self.fileName
-        result[self.filePath] = self.filePath
+        result[self.FilePath] = self.filePath
         return result
     }
     
@@ -167,13 +192,20 @@ class MuPDF : CDVPlugin {
         var pluginResult:CDVPluginResult?
         if openType == self.Path {
             let path = content as String
+            self.fileName = self.getFileName(path)
+            self.filePath = path
             var nspath = NSHomeDirectory() + "/Documents/" + path
             var cPath = nspath.cStringUsingEncoding(NSUTF8StringEncoding)!
-            if !(self.core?.openFile(&cPath) != nil) {
+            if !self.core!.openFile(&cPath) {
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Can not open document.")
             }
         } else {
-            pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Not support.")
+            var buffer: NSData = content as NSData
+            var magic = "".cStringUsingEncoding(NSUTF8StringEncoding)!
+            if !self.core!.openFile(buffer, magic: &magic) {
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Can not open document.")
+            }
+//            pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Not support.")
         }
         return pluginResult
     }
@@ -182,8 +214,17 @@ class MuPDF : CDVPlugin {
         return self.core!.isFileOpen()
     }
     
+    private func getFileName(path: String) -> String {
+        if let slashRange = path.rangeOfString("/") {
+            var fileName = path.substringFromIndex(slashRange.endIndex)
+            return getFileName(fileName)
+        } else {
+            return path
+        }
+    }
+    
     private func closeFile() {
-        self.core?.closeFile()
+        self.core!.closeFile()
         self.fileName = "";
         self.filePath = "";
         self.numberOfPage = 0;

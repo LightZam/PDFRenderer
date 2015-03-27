@@ -74,19 +74,19 @@ iOS Notice:
          
          <header-file src="src/ios/Common.h" />
          <source-file src="src/ios/Common.m" />
-         <header-file src="src/ios/MuWord.h" />
-         <source-file src="src/ios/MuWord.m" />
+         <!-- <header-file src="src/ios/MuWord.h" /> -->
+         <!-- <source-file src="src/ios/MuWord.m" /> -->
          <header-file src="src/ios/MuDocRef.h" />
          <source-file src="src/ios/MuDocRef.m" />
-         <header-file src="src/ios/MuAnnotation.h" />
-         <source-file src="src/ios/MuAnnotation.m" />
-         <header-file src="src/ios/MuDialogCreator.h" />
-         <header-file src="src/ios/MuUpdater.h" />
-         <header-file src="src/ios/MuPageView.h" />
+         <!-- <header-file src="src/ios/MuAnnotation.h" /> -->
+         <!-- <source-file src="src/ios/MuAnnotation.m" /> -->
+         <!-- <header-file src="src/ios/MuDialogCreator.h" /> -->
+         <!-- <header-file src="src/ios/MuUpdater.h" /> -->
+         <!-- <header-file src="src/ios/MuPageView.h" /> -->
          <header-file src="src/ios/PDFRendererCore.h" />
          <source-file src="src/ios/PDFRendererCore.m" />
-         <!-- <header-file src="src/ios/MuPDF.h" />
-         <source-file src="src/ios/MuPDF.m" /> -->
+         <!-- <header-file src="src/ios/MuPDF.h" /> -->
+         <!-- <source-file src="src/ios/MuPDF.m" /> -->
          <header-file src="src/ios/PDFRenderer-Bridging-Header.h" />
          <source-file src="src/ios/PDFRenderer.swift" />
          <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
