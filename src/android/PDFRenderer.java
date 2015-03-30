@@ -229,7 +229,7 @@ public class PDFRenderer extends CordovaPlugin {
 	}
 
 	private File getOutputMediaFile(int page, int encodingType) {
-		String path = Environment.getExternalStorageDirectory() + "/Android/data/" + cordova.getActivity().getPackageName() + "/files/" + mFileName;
+		String path = Environment.getExternalStorageDirectory() + "/Android/data/" + cordova.getActivity().getPackageName() + "/files/PDFRenderer/" + mFileName;
 		File mediaStorageDir = new File(path);
 
 		// Create the storage directory if it does not exist

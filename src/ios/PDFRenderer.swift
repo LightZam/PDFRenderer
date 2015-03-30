@@ -116,7 +116,7 @@ class PDFRenderer : CDVPlugin {
             } else if destinationType == self.DataUrl {     // base64
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: data.base64EncodedString())
             } else if destinationType == self.FileUri {     // file path
-                var path: String = NSHomeDirectory() + "/Documents/" + String(self.currentPage) + format
+                var path: String = NSHomeDirectory() + "/Documents/PDFRenderer/" + self.fileName + "/" + String(self.currentPage) + format
                 data.writeToFile(path, atomically: true)
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: path)
             }
@@ -194,18 +194,18 @@ class PDFRenderer : CDVPlugin {
             let path = content as String
             self.fileName = self.getFileName(path)
             self.filePath = path
-            var nspath = NSHomeDirectory() + "/Documents/" + path
-            var cPath = nspath.cStringUsingEncoding(NSUTF8StringEncoding)!
+//            var nspath = NSHomeDirectory() + "/Documents/" + path
+            var cPath = path.cStringUsingEncoding(NSUTF8StringEncoding)!
             if !self.core!.openFile(&cPath) {
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Can not open document.")
             }
         } else {
-            var buffer: NSData = content as NSData
-            var magic = "".cStringUsingEncoding(NSUTF8StringEncoding)!
-            if !self.core!.openFile(buffer, magic: &magic) {
-                pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Can not open document.")
-            }
-//            pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Not support.")
+//            var buffer: NSData = content as NSData
+//            var magic = "".cStringUsingEncoding(NSUTF8StringEncoding)!
+//            if !self.core!.openFile(buffer, magic: &magic) {
+//                pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Can not open document.")
+//            }
+            pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "iOS not support open buffer yet.")
         }
         return pluginResult
     }
