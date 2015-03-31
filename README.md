@@ -1,0 +1,33 @@
+## PDFRenderer
+### 0.0.1-dev
+* How to build library
+	* Prerequires
+		1. minNDK = `ndk-r10d`
+		2. build muPDF `reference: http://www.mupdf.com/docs/how-to-build-mupdf-for-android`
+	* Android
+		* create new cordova project
+		* copy muPDF source to PDFRenderer
+			- resources
+			- scripts
+			- thirdparty
+			- source
+		* unmark PDFRenderer jni directory under plugin.xml
+		* install PDFRenderer
+			- cordova plugin add {PDFRenderer path}
+		* add native support (usgin eclipse)
+		* build project (using eclipse)
+	* iOS
+		* using muPDF iOS native app to build library by xcode 
+* 0.0.1-dev tests
+	* Only Android for now
+	* Prerequires
+		1. install cordova-test-framework
+			- cordova plugin add https://github.com/apache/cordova-plugin-test-framework.git
+		2. install PDFRenderer tests 
+			- cordova plugin add {PDFRenderer path}/tests
+		3. Get Ready a file with name: PDFRendererTest.pdf and password 1234
+		4. Put file to /storage/emulated/0/Download/PDFRendererTest.pdf
+		5. change the config.xml to cdvtests/index.html
+	* Step
+		1. cordova run android
+		2. see the phone or emulator running result
