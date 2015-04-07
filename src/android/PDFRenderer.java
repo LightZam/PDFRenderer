@@ -27,7 +27,7 @@ public class PDFRenderer extends CordovaPlugin {
 	public final String TAG = "PDFRenderer";
 	private static final int DATA_BIN = 0;              // Return ArrayBuffer
 	private static final int DATA_URL = 1;              // Return base64 encoded string
-	private static final int FILE_URI = 2;              // Return file uri (content://media/external/images/media/2 for Android)
+	private static final int FILE_URI = 2;              // Return file uri 
 
 	private static final int JPEG = 0;                  // Take a picture of type JPEG
 	private static final int PNG = 1;                   // Take a picture of type PNG
