@@ -34,7 +34,7 @@ static fz_rect hit_bbox[500];
  * public method
  * --------------------
  */
-- (BOOL) openFile: (char*)path, () {
+- (BOOL) openFile: (char*)path {
     ctx = fz_new_context(nil, nil, ResourceCacheMaxSize);
     fz_register_document_handlers(ctx);
     dispatch_sync(queue, ^{});

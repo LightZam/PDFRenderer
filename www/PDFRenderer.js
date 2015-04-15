@@ -8,7 +8,8 @@ var preference = {
 	openType: PDFRenderer.OpenType.PATH,
 	quality: 100,
 	encodingType: PDFRenderer.EncodingType.JPEG,
-	destinationType: PDFRenderer.DestinationType.DATA_BIN
+	destinationType: PDFRenderer.DestinationType.DATA_BIN,
+	destinationPath: ''
 };
 
 pdfRendererExport.changePreference = function(options) {
@@ -20,17 +21,39 @@ pdfRendererExport.changePreference = function(options) {
 	preference.quality = getValue(options.quality, preference.quality);
 	preference.encodingType = getValue(options.encodingType, preference.encodingType);
 	preference.destinationType = getValue(options.destinationType, preference.destinationType);
+	preference.destinationPath = getValue(options.destinationPath, '');
+
+	var args = [preference.destinationPath];
+	exec(null, null, GSS_PDFRenderer, "changePreference", args);
 	return preference;
 }
+
+// pdfRendererExport.changePreference = function(successCallback, errorCallback, options) {
+// 	argscheck.checkArgs('FFO', 'PDFRenderer.changePreference', arguments);
+//     options = options || {};
+//     var getValue = argscheck.getValue,
+// 		success = function(data) {
+// 			successCallback(preference);
+// 		};
+
+//     preference.openType = getValue(options.openType, preference.openType);
+// 	preference.quality = getValue(options.quality, preference.quality);
+// 	preference.encodingType = getValue(options.encodingType, preference.encodingType);
+// 	preference.destinationType = getValue(options.destinationType, preference.destinationType);
+// 	preference.destinationPath = getValue(options.destinationPath, '');
+
+// 	var args = [preference.destinationPath];
+// 	exec(success, errorCallback, GSS_PDFRenderer, "changePreference", args);
+// }
 
 pdfRendererExport.open = function(successCallback, errorCallback, options) {
 	argscheck.checkArgs('FFO', 'PDFRenderer.open', arguments);
     options = options || {};
     var getValue = argscheck.getValue;
     
-    var content = getValue(options.content, "");
-    var openType = getValue(options.openType, preference.openType);
-    var password = getValue(options.password, "");
+    var content = getValue(options.content, ""),
+    	openType = getValue(options.openType, preference.openType),
+    	password = getValue(options.password, "");
     
     var args = [content, openType, password];
     exec(successCallback, errorCallback, GSS_PDFRenderer, "open", args);
@@ -45,18 +68,19 @@ pdfRendererExport.getPage = function(successCallback, errorCallback, options) {
 	options = options || {};
 	var getValue = argscheck.getValue;
   
-	var page = getValue(options.page, 0);
-	var width = getValue(options.width, -1);
-	var height = getValue(options.height, -1);
-	var patchX = getValue(options.patchX, 0);
-	var patchY = getValue(options.patchY, 0);
-	var patchWidth = getValue(options.patchWidth, width);
-	var patchHeight = getValue(options.patchHeight, height);
-	var quality = getValue(options.quality, preference.quality);
-	var encodingType = getValue(options.encodingType, preference.encodingType);
-	var destinationType = getValue(options.destinationType, preference.destinationType);
+	var page = getValue(options.page, 0),
+		width = getValue(options.width, -1),
+		height = getValue(options.height, -1),
+		patchX = getValue(options.patchX, 0),
+		patchY = getValue(options.patchY, 0),
+		patchWidth = getValue(options.patchWidth, width),
+		patchHeight = getValue(options.patchHeight, height),
+		quality = getValue(options.quality, preference.quality),
+		encodingType = getValue(options.encodingType, preference.encodingType),
+		destinationType = getValue(options.destinationType, preference.destinationType),
+		destinationPath = getValue(options.destinationPath, preference.destinationPath);
 	
-	var args = [page, width, height, patchX, patchY, patchWidth, patchHeight, quality, encodingType, destinationType];
+	var args = [page, width, height, patchX, patchY, patchWidth, patchHeight, quality, encodingType, destinationType, destinationPath];
     exec(successCallback, errorCallback, GSS_PDFRenderer, "getPage", args);
 };
 

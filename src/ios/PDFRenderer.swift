@@ -12,42 +12,46 @@ import Foundation
 class PDFRenderer : CDVPlugin {
     var core: PDFRendererCore?
     
-    let DataBin:Int = 0
-    let DataUrl:Int = 1
-    let FileUri:Int = 2
+    let DataBin: Int = 0
+    let DataUrl: Int = 1
+    let FileUri: Int = 2
     
-    let Jpeg:Int = 0
-    let Png:Int = 1
+    let Jpeg: Int = 0
+    let Png: Int = 1
     
-    let Path:Int = 0
-    let Buffer:Int = 1
+    let Path: Int = 0
+    let Buffer: Int = 1
     
-    let NumberOfPage:String = "numberOfPage"
-    let PageWidth:String = "width"
-    let PageHeight:String = "height"
-    let FilePath:String = "path"
-    let FileName:String = "name"
+    let NumberOfPage: String = "numberOfPage"
+    let PageWidth: String = "width"
+    let PageHeight: String = "height"
+    let FilePath: String = "path"
+    let FileName: String = "name"
+    var SystemPath: String;
     
     var fileName: String;
     var filePath: String;
     var numberOfPage: Int;
     var currentPage: Int;
+    var customPath: String;
     
     override
-    init!(webView theWebView: UIWebView!) {
+    init(webView theWebView: UIWebView!) {
         self.core = PDFRendererCore()
         self.fileName = ""
         self.filePath = ""
         self.numberOfPage = 0
         self.currentPage = 0
+        self.customPath = ""
+        self.SystemPath = NSHomeDirectory() + "/Documents/PDFRenderer"
         super.init()
     }
     
     func open(command: CDVInvokedUrlCommand) {
         commandDelegate.runInBackground({
-            var content = command.arguments[0] as AnyObject
-            var openType = command.arguments[1] as Int
-            var password = command.arguments[2] as String
+            var content: AnyObject = command.arguments[0] as AnyObject
+            var openType = command.arguments[1] as! Int
+            var password = command.arguments[2] as! String
             var cPassword = password.cStringUsingEncoding(NSUTF8StringEncoding)!
             var pluginResult: CDVPluginResult?
             
@@ -85,18 +89,19 @@ class PDFRenderer : CDVPlugin {
                 self.commandDelegate.sendPluginResult(pluginResult, callbackId: command.callbackId)
                 return
             }
-            let index = command.arguments[0] as NSNumber
+            let index = command.arguments[0] as! NSNumber
             var pageSize: CGSize = self.core!.getPageSize(index.intValue)
             var patchRect: CGRect = CGRect()
-            pageSize.width = command.arguments[1] as Int == -1 ? pageSize.width : command.arguments[1] as CGFloat
-            pageSize.height = command.arguments[2] as Int == -1 ? pageSize.height : command.arguments[2] as CGFloat
-            patchRect.origin.x = command.arguments[3] as CGFloat
-            patchRect.origin.y = command.arguments[4] as CGFloat
-            patchRect.size.width = command.arguments[5] as Int == -1 ? pageSize.width : command.arguments[5] as CGFloat
-            patchRect.size.height = command.arguments[6] as Int == -1 ? pageSize.height : command.arguments[6] as CGFloat
-            let quality = command.arguments[7] as CGFloat
-            let encodingType = command.arguments[8] as Int
-            let destinationType = command.arguments[9] as Int
+            pageSize.width = command.arguments[1] as! Int == -1 ? pageSize.width : command.arguments[1] as! CGFloat
+            pageSize.height = command.arguments[2] as! Int == -1 ? pageSize.height : command.arguments[2] as! CGFloat
+            patchRect.origin.x = command.arguments[3] as! CGFloat
+            patchRect.origin.y = command.arguments[4] as! CGFloat
+            patchRect.size.width = command.arguments[5] as! Int == -1 ? pageSize.width : command.arguments[5] as! CGFloat
+            patchRect.size.height = command.arguments[6] as! Int == -1 ? pageSize.height : command.arguments[6] as! CGFloat
+            let quality = command.arguments[7] as! CGFloat
+            let encodingType = command.arguments[8] as! Int
+            let destinationType = command.arguments[9] as! Int
+            let destinationPath = command.arguments[10] as! String
             self.currentPage = index.integerValue
             var image: UIImage? = self.core!.drawPage(index.intValue, pageSize: pageSize, patchRect: patchRect)
             var pluginResult: CDVPluginResult? = nil
@@ -116,7 +121,15 @@ class PDFRenderer : CDVPlugin {
             } else if destinationType == self.DataUrl {     // base64
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: data.base64EncodedString())
             } else if destinationType == self.FileUri {     // file path
-                var path: String = NSHomeDirectory() + "/Documents/PDFRenderer/" + self.fileName + "/" + String(self.currentPage) + format
+                var path: String = self.SystemPath
+                if (!destinationPath.isEmpty) {
+                    path = path + self.addSlashFirstAndLast(destinationPath)
+                } else if (!self.customPath.isEmpty) {
+                    path = path + "/" + self.addSlashFirstAndLast(self.customPath)
+                } else {
+                    path = path + self.fileName
+                }
+                path = path + String(self.currentPage) + format
                 data.writeToFile(path, atomically: true)
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: path)
             }
@@ -132,7 +145,7 @@ class PDFRenderer : CDVPlugin {
                 self.commandDelegate.sendPluginResult(pluginResult, callbackId: command.callbackId)
                 return
             }
-            let n = command.accessibilityElementAtIndex(0) == nil ? self.currentPage : command.arguments[0] as Int
+            let n = command.accessibilityElementAtIndex(0) == nil ? self.currentPage : command.arguments[0] as! Int
             let index: NSNumber = n >= self.numberOfPage ? self.numberOfPage - 1 : n
             let pageSize: CGSize = self.core!.getPageSize(index.intValue)
             
@@ -157,6 +170,12 @@ class PDFRenderer : CDVPlugin {
         })
     }
     
+    func changePreference(command: CDVInvokedUrlCommand) {
+        self.customPath = command.arguments[0] as! String
+        var pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsDictionary: self.preparePDFInfo())
+        self.commandDelegate.sendPluginResult(pluginResult, callbackId: command.callbackId)
+    }
+    
     private func preparePDFInfo() -> Dictionary<String, AnyObject> {
         var result:Dictionary<String, AnyObject> = Dictionary()
         result[self.NumberOfPage] = self.numberOfPage
@@ -169,7 +188,7 @@ class PDFRenderer : CDVPlugin {
         var pluginResult:CDVPluginResult?
         if self.core!.needsPassword() {
             var cPassword = password.cStringUsingEncoding(NSUTF8StringEncoding)!
-            if password.utf16Count == 0 {
+            if count(password.utf16) == 0 {
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "The PDF needs password.")
             } else if !self.core!.authenticatePassword(&cPassword) {
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Password incorrect.")
@@ -191,11 +210,12 @@ class PDFRenderer : CDVPlugin {
     private func openFile(content: AnyObject, openType: Int) -> CDVPluginResult? {
         var pluginResult:CDVPluginResult?
         if openType == self.Path {
-            let path = content as String
+            let path = content as! String
             self.fileName = self.getFileName(path)
             self.filePath = path
-//            var nspath = NSHomeDirectory() + "/Documents/" + path
-            var cPath = path.cStringUsingEncoding(NSUTF8StringEncoding)!
+            var nspath = NSHomeDirectory() + "/Documents/" + path
+            var cPath = nspath.cStringUsingEncoding(NSUTF8StringEncoding)!
+//            var cPath = path.cStringUsingEncoding(NSUTF8StringEncoding)!
             if !self.core!.openFile(&cPath) {
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Can not open document.")
             }
@@ -219,7 +239,12 @@ class PDFRenderer : CDVPlugin {
             var fileName = path.substringFromIndex(slashRange.endIndex)
             return getFileName(fileName)
         } else {
-            return path
+            if let dotRange = path.rangeOfString(".") {
+                return path.substringToIndex(dotRange.startIndex)
+            } else {
+                return path
+            }
+            
         }
     }
     
@@ -229,5 +254,16 @@ class PDFRenderer : CDVPlugin {
         self.filePath = "";
         self.numberOfPage = 0;
         self.currentPage = 0;
+    }
+    
+    private func addSlashFirstAndLast(destinationPath: String) -> String {
+        var path = destinationPath
+        if path[path.startIndex] != "/" {
+            path = "/" + path
+        }
+        if path[advance(path.endIndex, -1)] != "/" {
+            path = path + "/"
+        }
+        return path
     }
 }

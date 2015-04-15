@@ -52,7 +52,7 @@ exports.defineAutoTests = function() {
             var success = function(data) {
                 expect(data.numberOfPage).toBe(8);
                 expect(data.path).toBe(openFileObj.content);
-                expect(data.name).toBe('PDFRendererTest.pdf');
+                expect(data.name).toBe('PDFRendererTest');
                 PDFRenderer.close(null, null);
                 done();
             };
@@ -141,7 +141,7 @@ exports.defineAutoTests = function() {
             var success = function(data) {
                 expect(data.numberOfPage).toBeGreaterThan(0);
                 expect(data.path).toBe(openFileObj.content);
-                expect(data.name).toBe('PDFRendererTest.pdf');
+                expect(data.name).toBe('PDFRendererTest');
                 PDFRenderer.close(null, null);
                 done();
             }
@@ -169,17 +169,84 @@ exports.defineAutoTests = function() {
         it('should return picture path', function(done) {
             var success = function(data) {
                 expect(data).toContain('/storage/emulated/0/Android/data/');
-                expect(data).toContain('/files/PDFRenderer/PDFRendererTest.pdf/0.jpeg');
+                expect(data).toContain('/files/PDFRenderer/PDFRendererTest/0.jpeg');
                 PDFRenderer.close(null, null); 
                 done();
             }
             PDFRenderer.open(function() {
                 var obj = { 
-                    destinationType: PDFRenderer.DestinationType.FILE_URI 
+                    destinationType: PDFRenderer.DestinationType.FILE_URI
                 }
                 PDFRenderer.getPage(success, shouldNotBeFailed.bind(done), obj);
             }, null, openFileObj);
         });
+
+        it('should return picture path which give a destinationPath', function(done) {
+            var success = function(data) {
+                expect(data).toContain('/storage/emulated/0/Android/data/');
+                expect(data).toContain('/files/PDFRenderer/Zam/PDFName/0.jpeg');
+                PDFRenderer.close(null, null); 
+                done();
+            }
+            PDFRenderer.open(function() {
+                var obj = { 
+                    destinationType: PDFRenderer.DestinationType.FILE_URI,
+                    destinationPath: '/Zam/PDFName/'
+                }
+                PDFRenderer.getPage(success, shouldNotBeFailed.bind(done), obj);
+            }, null, openFileObj);
+        });
+
+        // it('should return picture path which give a default destinationPath', function(done) {
+        //     var success = function(data) {
+        //         expect(data).toContain('/storage/emulated/0/Android/data/');
+        //         expect(data).toContain('/files/PDFRenderer/Zam/PDFName/0.jpeg');
+        //         PDFRenderer.close(null, null); 
+        //         done();
+        //     }
+        //     PDFRenderer.open(function() {
+        //         var obj = { 
+        //             destinationType: PDFRenderer.DestinationType.FILE_URI
+        //         }
+        //         PDFRenderer.changePreference(function() {
+        //             PDFRenderer.getPage(success, shouldNotBeFailed.bind(done), obj);
+        //         }, null, { destinationPath: '/Zam/PDFName/' });
+        //     }, null, openFileObj);
+        // });
+
+        it('should return picture path which give a default destinationPath', function(done) {
+            var success = function(data) {
+                expect(data).toContain('/storage/emulated/0/Android/data/');
+                expect(data).toContain('/files/PDFRenderer/Zam/PDFName/0.jpeg');    
+
+                PDFRenderer.changePreference({ destinationPath: '' });         
+                PDFRenderer.close(null, null); 
+                done();
+            }
+            PDFRenderer.open(function() {
+                var obj = { 
+                    destinationType: PDFRenderer.DestinationType.FILE_URI
+                }
+                PDFRenderer.changePreference({ destinationPath: '/Zam/PDFName/' });
+                PDFRenderer.getPage(success, shouldNotBeFailed.bind(done), obj);
+            }, null, openFileObj);
+        });
+        // it('should return picture path which give a default destinationPath', function(done) {
+        //     var success = function(data) {
+        //         expect(data).toContain('/storage/emulated/0/Android/data/');
+        //         expect(data).toContain('/files/PDFRenderer/Zam/PDFName/0.jpeg');
+        //         PDFRenderer.close(null, null); 
+        //         done();
+        //     }
+        //     PDFRenderer.open(function() {
+        //         var obj = { 
+        //             destinationType: PDFRenderer.DestinationType.FILE_URI
+        //         }
+        //         PDFRenderer.changePreference(function() {
+        //             PDFRenderer.getPage(success, shouldNotBeFailed.bind(done), obj);
+        //         }, null, { destinationPath: '/Zam/PDFName/' });
+        //     }, null, openFileObj);
+        // });
 
         it('should return data binary (arraybuffer)', function(done) {
             var success = function(data) {
@@ -218,23 +285,74 @@ exports.defineAutoTests = function() {
             expect(typeof PDFRenderer.changePreference == 'function').toBe(true);
         });
 
-        it('should has default value', function() {
-            var data = PDFRenderer.changePreference();
-            expect(data.destinationType).toBe(PDFRenderer.DestinationType.DATA_BIN);
-            expect(data.openType).toBe(PDFRenderer.OpenType.PATH);
-            expect(data.encodingType).toBe(PDFRenderer.EncodingType.JPEG);
-            expect(data.quality).toBe(100);
+        it('should has default value', function(done) {
+            var success = function(data) {
+            }
+
+            PDFRenderer.open(function() {
+                var data = PDFRenderer.changePreference();
+                expect(data.destinationType).toBe(PDFRenderer.DestinationType.DATA_BIN);
+                expect(data.openType).toBe(PDFRenderer.OpenType.PATH);
+                expect(data.encodingType).toBe(PDFRenderer.EncodingType.JPEG);
+                expect(data.quality).toBe(100);
+                expect(data.destinationPath).toBe('');
+                done();
+            }, null, openFileObj);
         });
 
-        it('should change the default value', function() {
+        it('should change the default value', function(done) {
             var obj = {
-                quality: 50
+                quality: 50,
+                destinationPath: '/Zam/PDFName/'
             };
-            var data = PDFRenderer.changePreference(obj);
-            expect(data.destinationType).toBe(PDFRenderer.DestinationType.DATA_BIN);
-            expect(data.openType).toBe(PDFRenderer.OpenType.PATH);
-            expect(data.encodingType).toBe(PDFRenderer.EncodingType.JPEG);
-            expect(data.quality).toBe(obj.quality);
+
+            PDFRenderer.open(function() {
+                var data = PDFRenderer.changePreference(obj);
+                expect(data.destinationType).toBe(PDFRenderer.DestinationType.DATA_BIN);
+                expect(data.openType).toBe(PDFRenderer.OpenType.PATH);
+                expect(data.encodingType).toBe(PDFRenderer.EncodingType.JPEG);
+                expect(data.quality).toBe(obj.quality);
+                expect(data.destinationPath).toBe(obj.destinationPath);
+
+                PDFRenderer.changePreference({ quality: 100, destinationPath: '' });
+                PDFRenderer.close(null, null);
+                done();
+            }, null, openFileObj);
         });
+
+        // it('should has default value', function(done) {
+        //     var success = function(data) {
+        //         expect(data.destinationType).toBe(PDFRenderer.DestinationType.DATA_BIN);
+        //         expect(data.openType).toBe(PDFRenderer.OpenType.PATH);
+        //         expect(data.encodingType).toBe(PDFRenderer.EncodingType.JPEG);
+        //         expect(data.quality).toBe(100);
+        //         expect(data.destinationPath).toBe('');
+        //         done();
+        //     }
+
+        //     PDFRenderer.open(function() {
+        //         PDFRenderer.changePreference(success, shouldNotBeFailed.bind(done));
+        //     }, null, openFileObj);
+        // });
+
+        // it('should change the default value', function(done) {
+        //     var success = function(data) {
+        //         expect(data.destinationType).toBe(PDFRenderer.DestinationType.DATA_BIN);
+        //         expect(data.openType).toBe(PDFRenderer.OpenType.PATH);
+        //         expect(data.encodingType).toBe(PDFRenderer.EncodingType.JPEG);
+        //         expect(data.quality).toBe(obj.quality);
+        //         expect(data.destinationPath).toBe(obj.destinationPath);
+        //         PDFRenderer.close(null, null);
+        //         done();
+        //     }
+        //     var obj = {
+        //         quality: 50,
+        //         destinationPath: '/Zam/PDFName/'
+        //     };
+
+        //     PDFRenderer.open(function() {
+        //         PDFRenderer.changePreference(success, shouldNotBeFailed.bind(done), obj);
+        //     }, null, openFileObj);
+        // });
     });
 };

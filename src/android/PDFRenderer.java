@@ -12,6 +12,7 @@ import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.AuthenticatorException;
@@ -40,12 +41,14 @@ public class PDFRenderer extends CordovaPlugin {
 	private final String PAGE_HEIGHT = "height";
 	private final String PDF_PATH = "path";
 	private final String PDF_NAME = "name";
+	private String SYSTEM_PATH;
 
 	private PDFRendererCore mCore;
 	private String mFileName;
 	private int mNumberOfPage;
 	private String mFilePath;
 	private int mCurrentPage;
+	private String mCustomPath;
 
 	@Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -53,6 +56,8 @@ public class PDFRenderer extends CordovaPlugin {
 		mFilePath = "";
 		mNumberOfPage = 0;
 		mCurrentPage = 0;
+		mCustomPath = "";
+		SYSTEM_PATH = Environment.getExternalStorageDirectory() + "/Android/data/" + cordova.getActivity().getPackageName() + "/files/PDFRenderer";
 		super.initialize(cordova, webView);
 	}
 
@@ -84,7 +89,8 @@ public class PDFRenderer extends CordovaPlugin {
 					if (openType == PATH) {
 						String path = args.getString(0);
 						int lastIndexOfSlash = path.lastIndexOf('/');
-						mFileName = new String(lastIndexOfSlash == -1 ? path : path.substring(lastIndexOfSlash + 1));
+						int lastIndexOfDot = path.lastIndexOf('.');
+						mFileName = new String(lastIndexOfSlash == -1 ? path : path.substring(lastIndexOfSlash + 1, lastIndexOfDot));
 						mFilePath = path;
 						mCore = new PDFRendererCore(path);
 					} else {
@@ -125,6 +131,7 @@ public class PDFRenderer extends CordovaPlugin {
 					final int quality = args.getInt(7);
 					final int encodingType = args.getInt(8);
 					final int destinationType = args.getInt(9);
+					final String destinationPath = args.getString(10);
 
 					Bitmap bm = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 					mCore.drawPage(bm, page, width, height, patchX, patchY, patchWidth, patchHeight, mCore.new Cookie());
@@ -133,7 +140,7 @@ public class PDFRenderer extends CordovaPlugin {
 					} else if (destinationType == DATA_URL) {
 						callback.success(encodeTobase64(bm, encodingType, quality));
 					} else if (destinationType == FILE_URI) {
-						callback.success(saveImage(bm, page, encodingType, quality));
+						callback.success(saveImage(bm, page, encodingType, quality, destinationPath));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -176,6 +183,16 @@ public class PDFRenderer extends CordovaPlugin {
 			}
 		});
 	}
+	
+	public void changePreference(final CordovaArgs args, final CallbackContext callback) {
+		try {
+	        mCustomPath = args.getString(0);
+			callback.success();
+        } catch (JSONException e) {
+	        e.printStackTrace();
+			callback.error(e.getMessage());
+        }
+	}
 
 	private JSONObject preparePDFInfo() throws Exception {
 		JSONObject result = new JSONObject();
@@ -217,8 +234,8 @@ public class PDFRenderer extends CordovaPlugin {
 		mFilePath = "";
 	}
 
-	private String saveImage(Bitmap image, int page, int encodingType, int quality) throws FileNotFoundException, IOException, NullPointerException {
-		File pictureFile = getOutputMediaFile(page, encodingType);
+	private String saveImage(Bitmap image, int page, int encodingType, int quality, String destinationPath) throws FileNotFoundException, IOException, NullPointerException {
+		File pictureFile = getOutputMediaFile(page, encodingType, destinationPath);
 		if (pictureFile == null) {
 			throw new NullPointerException("Error creating media file, check storage permissions.");
 		}
@@ -228,8 +245,15 @@ public class PDFRenderer extends CordovaPlugin {
 		return pictureFile.getAbsolutePath();
 	}
 
-	private File getOutputMediaFile(int page, int encodingType) {
-		String path = Environment.getExternalStorageDirectory() + "/Android/data/" + cordova.getActivity().getPackageName() + "/files/PDFRenderer/" + mFileName;
+	private File getOutputMediaFile(int page, int encodingType, String destinationPath) {
+		String path = SYSTEM_PATH;
+		if (!destinationPath.isEmpty()) {
+			path = path + addSlashFirstAndLast(destinationPath);
+		} else if (!mCustomPath.isEmpty()) {
+			path = path + addSlashFirstAndLast(mCustomPath);
+		} else {
+			path = path + File.separator + mFileName;
+		}
 		File mediaStorageDir = new File(path);
 
 		// Create the storage directory if it does not exist
@@ -276,5 +300,16 @@ public class PDFRenderer extends CordovaPlugin {
 			format = Bitmap.CompressFormat.PNG;
 		}
 		return format;
+	}
+	
+	private String addSlashFirstAndLast(String path) {
+		if (path.indexOf(File.separator) != 0) {
+			path = File.separator + path;
+		}
+		int lastIndex = path.length() - 1;
+		if (path.lastIndexOf(File.separator) != lastIndex) {
+			path = path + File.separator;
+		}
+		return path;
 	}
 }
