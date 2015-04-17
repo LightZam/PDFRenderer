@@ -12,6 +12,7 @@ import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.file.LocalFilesystem;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.os.Environment;
 import android.util.Base64;
+import android.view.Window;
 
 public class PDFRenderer extends CordovaPlugin {
 	public final String TAG = "PDFRenderer";
@@ -57,7 +59,8 @@ public class PDFRenderer extends CordovaPlugin {
 		mNumberOfPage = 0;
 		mCurrentPage = 0;
 		mCustomPath = "";
-		SYSTEM_PATH = Environment.getExternalStorageDirectory() + "/Android/data/" + cordova.getActivity().getPackageName() + "/files/PDFRenderer";
+//		SYSTEM_PATH = Environment.getExternalStorageDirectory() + "/Android/data/" + cordova.getActivity().getPackageName() + "/files/PDFRenderer";
+		SYSTEM_PATH = cordova.getActivity().getFilesDir().getAbsolutePath();	// /data/data/{package name}/files
 		super.initialize(cordova, webView);
 	}
 

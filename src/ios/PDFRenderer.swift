@@ -43,7 +43,7 @@ class PDFRenderer : CDVPlugin {
         self.numberOfPage = 0
         self.currentPage = 0
         self.customPath = ""
-        self.SystemPath = NSHomeDirectory() + "/Documents/PDFRenderer"
+        self.SystemPath = NSHomeDirectory() + "/Documents"
         super.init()
     }
     

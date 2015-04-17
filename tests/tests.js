@@ -168,8 +168,7 @@ exports.defineAutoTests = function() {
 
         it('should return picture path', function(done) {
             var success = function(data) {
-                expect(data).toContain('/storage/emulated/0/Android/data/');
-                expect(data).toContain('/files/PDFRenderer/PDFRendererTest/0.jpeg');
+                expect(data).toContain('/files/PDFRendererTest/0.jpeg');
                 PDFRenderer.close(null, null); 
                 done();
             }
@@ -183,8 +182,7 @@ exports.defineAutoTests = function() {
 
         it('should return picture path which give a destinationPath', function(done) {
             var success = function(data) {
-                expect(data).toContain('/storage/emulated/0/Android/data/');
-                expect(data).toContain('/files/PDFRenderer/Zam/PDFName/0.jpeg');
+                expect(data).toContain('/files/Zam/PDFName/0.jpeg');
                 PDFRenderer.close(null, null); 
                 done();
             }
@@ -216,8 +214,7 @@ exports.defineAutoTests = function() {
 
         it('should return picture path which give a default destinationPath', function(done) {
             var success = function(data) {
-                expect(data).toContain('/storage/emulated/0/Android/data/');
-                expect(data).toContain('/files/PDFRenderer/Zam/PDFName/0.jpeg');    
+                expect(data).toContain('/files/Zam/PDFName/0.jpeg');    
 
                 PDFRenderer.changePreference({ destinationPath: '' });         
                 PDFRenderer.close(null, null); 

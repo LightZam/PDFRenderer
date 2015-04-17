@@ -32,10 +32,15 @@
 		1. cordova run android
 		2. see the phone or emulator running result
 
-
 ### 0.0.2-dev
 	* it can use your own custom path now
 	* iOS
 		* fix error cause by new version swift sdk
 * 0.0.2-dev tests
 	* add test to new functionality
+
+
+### 0.0.3-dev
+	* change the system path to internal storage
+* 0.0.3-dev tests
+	* update test
