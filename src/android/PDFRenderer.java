@@ -136,7 +136,7 @@ public class PDFRenderer extends CordovaPlugin {
 					final int destinationType = args.getInt(9);
 					final String destinationPath = args.getString(10);
 
-					Bitmap bm = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+					Bitmap bm = Bitmap.createBitmap(patchWidth, patchHeight, Config.ARGB_8888);
 					mCore.drawPage(bm, page, width, height, patchX, patchY, patchWidth, patchHeight, mCore.new Cookie());
 					if (destinationType == DATA_BIN) {
 						callback.success(encodeToByteArray(bm, encodingType, quality));

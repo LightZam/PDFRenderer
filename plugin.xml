@@ -35,16 +35,13 @@
         <source-file src="src/android/LinkInfoRemote.java" target-dir="src/com/gss/pdfrenderer" />
         <source-file src="src/android/LinkInfoVisitor.java" target-dir="src/com/gss/pdfrenderer" />
         <source-file src="src/android/PDFRenderer.java" target-dir="src/com/gss/pdfrenderer" />
-        <!-- <source-file src="src/android/MuPDFAlert.java" target-dir="src/com/gss/pdfrenderer" /> -->
-        <!-- <source-file src="src/android/MuPDFAlertInternal.java" target-dir="src/com/gss/pdfrenderer" /> -->
         <source-file src="src/android/PDFRendererCore.java" target-dir="src/com/gss/pdfrenderer" />
-        <!-- <source-file src="src/android/MuPDFPageView.java" target-dir="src/com/gss/pdfrenderer" /> -->
         <source-file src="src/android/OutlineItem.java" target-dir="src/com/gss/pdfrenderer" />
         <source-file src="src/android/TextChar.java" target-dir="src/com/gss/pdfrenderer" />
         <source-file src="src/android/TextWord.java" target-dir="src/com/gss/pdfrenderer" />
         <source-file src="src/android/WidgetType.java" target-dir="src/com/gss/pdfrenderer" />
 		
-		
+		<!-- unmark this if you want to build your own lib -->
 <!-- 		<source-file src="jni/Android.mk" target-dir="jni" />
 		<source-file src="jni/Application.mk" target-dir="jni" />
 		<source-file src="jni/Core.mk" target-dir="jni" />
@@ -61,9 +58,12 @@
          <info>
 iOS Notice:
     1. open xcode go into settings change `deployment target` to 7.0 or above
-    2. add `[Project Name]/Plugins/com.gss.pdfrenderer/PDFRenderer-Bridging-Header.h` to Objective-c Bridging Header under the Build Settings > Swift Compiler - Code Generation options
-    3. add `[../../plugins/com.gss.pdfrenderer/include]` to UserHeader Search Paths under the Build Settings > Search Paths
-    4. add `[../../plugins/com.gss.pdfrenderer/libs/ios/x86_64, ../../plugins/com.gss.pdfrenderer/libs/ios/i386]` to Library Search Path under the Build Settings > Search Paths
+    2. add `{Project Name}/Plugins/com.gss.pdfrenderer/PDFRenderer-Bridging-Header.h` 
+        to Objective-c Bridging Header 
+        under the Build Settings > Swift Compiler - Code Generation options
+    3. add `[../../plugins/com.gss.pdfrenderer/include]` 
+        to UserHeader Search Paths 
+        under the Build Settings > Search Paths
          </info>
          <config-file target="config.xml" parent="/*">
              <feature name="PDFRenderer">
@@ -74,59 +74,43 @@ iOS Notice:
          
          <header-file src="src/ios/Common.h" />
          <source-file src="src/ios/Common.m" />
-         <!-- <header-file src="src/ios/MuWord.h" /> -->
-         <!-- <source-file src="src/ios/MuWord.m" /> -->
          <header-file src="src/ios/MuDocRef.h" />
          <source-file src="src/ios/MuDocRef.m" />
-         <!-- <header-file src="src/ios/MuAnnotation.h" /> -->
-         <!-- <source-file src="src/ios/MuAnnotation.m" /> -->
-         <!-- <header-file src="src/ios/MuDialogCreator.h" /> -->
-         <!-- <header-file src="src/ios/MuUpdater.h" /> -->
-         <!-- <header-file src="src/ios/MuPageView.h" /> -->
          <header-file src="src/ios/PDFRendererCore.h" />
          <source-file src="src/ios/PDFRendererCore.m" />
-         <!-- <header-file src="src/ios/MuPDF.h" /> -->
-         <!-- <source-file src="src/ios/MuPDF.m" /> -->
          <header-file src="src/ios/PDFRenderer-Bridging-Header.h" />
          <source-file src="src/ios/PDFRenderer.swift" />
          <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
              <string></string>
          </config-file>
-         <!--         <source-file src="libs/ios/i386/libcurl.a" compiler-flags="i386" />-->
-         <!--         <source-file src="libs/ios/i386/libfreetype.a" compiler-flags="i386" />-->
-         <!--         <source-file src="libs/ios/i386/libjbig2dec.a" compiler-flags="i386" />-->
-         <!--         <source-file src="libs/ios/i386/libjpeg.a" compiler-flags="i386" />-->
-         <!--         <source-file src="libs/ios/i386/libmujs.a" compiler-flags="i386" />-->
-         <!--         <source-file src="libs/ios/i386/libmupdf.a" compiler-flags="i386" />-->
-         <!--         <source-file src="libs/ios/i386/libopenjpeg.a" compiler-flags="i386" />-->
-         <!--         <source-file src="libs/ios/i386/libz.a" compiler-flags="i386" />-->
-         <!--         -->
-         <!--         <source-file src="libs/ios/x86_64/libcurl.a" compiler-flags="x86_64" />-->
-         <!--         <source-file src="libs/ios/x86_64/libfreetype.a" compiler-flags="x86_64" />-->
-         <!--         <source-file src="libs/ios/x86_64/libjbig2dec.a" compiler-flags="x86_64" />-->
-         <!--         <source-file src="libs/ios/x86_64/libjpeg.a" compiler-flags="x86_64" />-->
-         <!--         <source-file src="libs/ios/x86_64/libmujs.a" compiler-flags="x86_64" />-->
-         <!--         <source-file src="libs/ios/x86_64/libmupdf.a" compiler-flags="x86_64" />-->
-         <!--         <source-file src="libs/ios/x86_64/libopenjpeg.a" compiler-flags="x86_64" />-->
-         <!--         <source-file src="libs/ios/x86_64/libz.a" compiler-flags="x86_64" />-->
-         <framework src="libs/ios/i386/libcurl.a" />
-         <framework src="libs/ios/i386/libfreetype.a" />
-         <framework src="libs/ios/i386/libjbig2dec.a" />
-         <framework src="libs/ios/i386/libjpeg.a" />
-         <framework src="libs/ios/i386/libmujs.a" />
-         <framework src="libs/ios/i386/libmupdf.a" />
-         <framework src="libs/ios/i386/libopenjpeg.a" />
-         <framework src="libs/ios/i386/libz.a" />
+
+        <source-file src="libs/ios/ipad-i386/ipad-i386-libcurl.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/ipad-i386/ipad-i386-libfreetype.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/ipad-i386/ipad-i386-libjbig2dec.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/ipad-i386/ipad-i386-libjpeg.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/ipad-i386/ipad-i386-libmujs.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/ipad-i386/ipad-i386-libmupdf.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/ipad-i386/ipad-i386-libopenjpeg.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/ipad-i386/ipad-i386-libz.a" compiler-flags="i386" framework="true"/>
+
+        <source-file src="libs/ios/iphone-i386/iphone-i386-libcurl.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/iphone-i386/iphone-i386-libfreetype.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/iphone-i386/iphone-i386-libjbig2dec.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/iphone-i386/iphone-i386-libjpeg.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/iphone-i386/iphone-i386-libmujs.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/iphone-i386/iphone-i386-libmupdf.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/iphone-i386/iphone-i386-libopenjpeg.a" compiler-flags="i386" framework="true"/>
+        <source-file src="libs/ios/iphone-i386/iphone-i386-libz.a" compiler-flags="i386" framework="true"/>
          
-         <framework src="libs/ios/x86_64/libcurl.a" />
-         <framework src="libs/ios/x86_64/libfreetype.a" />
-         <framework src="libs/ios/x86_64/libjbig2dec.a" />
-         <framework src="libs/ios/x86_64/libjpeg.a" />
-         <framework src="libs/ios/x86_64/libmujs.a" />
-         <framework src="libs/ios/x86_64/libmupdf.a" />
-         <framework src="libs/ios/x86_64/libopenjpeg.a" />
-         <framework src="libs/ios/x86_64/libz.a" />
-         
+        <source-file src="libs/ios/iphone-x86_64/iphone-x86_64-libcurl.a" compiler-flags="x86_64" framework="true"/>
+        <source-file src="libs/ios/iphone-x86_64/iphone-x86_64-libfreetype.a" compiler-flags="x86_64" framework="true"/>
+        <source-file src="libs/ios/iphone-x86_64/iphone-x86_64-libjbig2dec.a" compiler-flags="x86_64" framework="true"/>
+        <source-file src="libs/ios/iphone-x86_64/iphone-x86_64-libjpeg.a" compiler-flags="x86_64" framework="true"/>
+        <source-file src="libs/ios/iphone-x86_64/iphone-x86_64-libmujs.a" compiler-flags="x86_64" framework="true"/>
+        <source-file src="libs/ios/iphone-x86_64/iphone-x86_64-libmupdf.a" compiler-flags="x86_64" framework="true"/>
+        <source-file src="libs/ios/iphone-x86_64/iphone-x86_64-libopenjpeg.a" compiler-flags="x86_64" framework="true"/>
+        <source-file src="libs/ios/iphone-x86_64/iphone-x86_64-libz.a" compiler-flags="x86_64" framework="true"/>
+
          <framework src="AssetsLibrary.framework" />
          <framework src="MobileCoreServices.framework" />
          <framework src="CoreGraphics.framework" />

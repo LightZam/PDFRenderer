@@ -33,14 +33,25 @@
 		2. see the phone or emulator running result
 
 ### 0.0.2-dev
+* release note
 	* it can use your own custom path now
 	* iOS
 		* fix error cause by new version swift sdk
-* 0.0.2-dev tests
-	* add test to new functionality
+	* 0.0.2-dev tests
+		* add test to new functionality
 
 
 ### 0.0.3-dev
+* release note
 	* change the system path to internal storage
-* 0.0.3-dev tests
-	* update test
+	* 0.0.3-dev tests
+		* update test
+
+### 0.0.4-dev
+* release note
+	* Android
+		* fix memory usage overhead at bitmap
+	* iOS
+		*  add ipad support
+		*  simplify the install step
+	
