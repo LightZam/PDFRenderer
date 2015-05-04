@@ -54,4 +54,8 @@
 	* iOS
 		*  add ipad support
 		*  simplify the install step
-	
+		*  
+### 0.0.5-dev
+* release note
+	* iOS
+		* fix zoom in/out

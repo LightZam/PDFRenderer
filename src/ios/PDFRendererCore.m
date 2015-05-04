@@ -11,11 +11,6 @@
 #include "mupdf/pdf.h"
 #include "dispatch/dispatch.h"
 #import "PDFRendererCore.h"
-//#import "MuAnnotation.h"
-//#import "MuWord.h"
-
-static int hit_count = 0;
-static fz_rect hit_bbox[500];
 
 @implementation PDFRendererCore
 
@@ -262,7 +257,9 @@ static void releasePixmap(void *info, const void *data, size_t size) {
     bbox.y0 = patchRect.origin.y;
     bbox.x1 = patchRect.origin.x + patchRect.size.width;
     bbox.y1 = patchRect.origin.y + patchRect.size.height;
-    fz_scale(&ctm, 1, 1);
+    float sx = pageSize.width / patchRect.size.width;
+    float sy = pageSize.height / patchRect.size.height;
+    fz_scale(&ctm, sx, sy);
     fz_rect_from_irect(&rect, &bbox);
     
     fz_var(dev);

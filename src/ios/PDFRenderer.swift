@@ -119,7 +119,7 @@ class PDFRenderer : CDVPlugin {
             if destinationType == self.DataBin {            // array buffer
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsArrayBuffer: data)
             } else if destinationType == self.DataUrl {     // base64
-                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: data.base64EncodedString())
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: data.cdv_base64EncodedString())
             } else if destinationType == self.FileUri {     // file path
                 var path: String = self.SystemPath
                 if (!destinationPath.isEmpty) {
@@ -213,9 +213,9 @@ class PDFRenderer : CDVPlugin {
             let path = content as! String
             self.fileName = self.getFileName(path)
             self.filePath = path
-            var nspath = NSHomeDirectory() + "/Documents/" + path
-            var cPath = nspath.cStringUsingEncoding(NSUTF8StringEncoding)!
-//            var cPath = path.cStringUsingEncoding(NSUTF8StringEncoding)!
+//            var nspath = NSHomeDirectory() + "/Documents/" + path
+//            var cPath = nspath.cStringUsingEncoding(NSUTF8StringEncoding)!
+            var cPath = path.cStringUsingEncoding(NSUTF8StringEncoding)!
             if !self.core!.openFile(&cPath) {
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Can not open document.")
             }
