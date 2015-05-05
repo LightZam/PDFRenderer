@@ -64,3 +64,4 @@
 * release note
 	* iOS
 		* fix return same page bug
+		* fix zoom in/out bug

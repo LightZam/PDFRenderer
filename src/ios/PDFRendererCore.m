@@ -118,7 +118,7 @@
     
     dispatch_async(queue, ^{});
     [self ensureDisplaylists: index];
-    pixmap = [self renderPixmap: pageSize patchRect: patchRect];
+    pixmap = [self renderPixmap:index pageSize: pageSize patchRect: patchRect];
     CGDataProviderRelease(imageData);
     imageData = [self createWrappedPixmap: pixmap];
     image = [self newImageWithPixmap: pixmap imageData: imageData];
@@ -236,7 +236,7 @@ static void releasePixmap(void *info, const void *data, size_t size) {
     return image;
 }
 
-- (fz_pixmap*) renderPixmap: (CGSize)pageSize patchRect: (CGRect)patchRect {
+- (fz_pixmap*) renderPixmap:(int)index (CGSize)pageSize patchRect: (CGRect)patchRect {
     fz_irect bbox;
     fz_rect rect;
     fz_matrix ctm;
@@ -247,8 +247,9 @@ static void releasePixmap(void *info, const void *data, size_t size) {
     bbox.y0 = patchRect.origin.y;
     bbox.x1 = patchRect.origin.x + patchRect.size.width;
     bbox.y1 = patchRect.origin.y + patchRect.size.height;
-    float sx = pageSize.width / patchRect.size.width;
-    float sy = pageSize.height / patchRect.size.height;
+    CGSize size = [self getPageSize:index];
+    float sx = pageSize.width / size.width;
+    float sy = pageSize.height / size.height;
     fz_scale(&ctm, sx, sy);
     fz_rect_from_irect(&rect, &bbox);
     
