@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.gss.pdfrenderer"
-    version="0.0.5-dev">
+    version="0.0.6-dev">
     <name>PDFRenderer</name>
     <description>Cordova PDF Renderer Plugin using MuPDF</description>
     <keywords>cordova, mupdf, pdf, render</keywords>

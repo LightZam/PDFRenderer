@@ -263,6 +263,7 @@ static void releasePixmap(void *info, const void *data, size_t size) {
         }
     } fz_always(ctx) {
         fz_free_device(dev);
+        dev = nil;
         fz_drop_pixmap(ctx, pix);
     } fz_catch(ctx) {
         return nil;
