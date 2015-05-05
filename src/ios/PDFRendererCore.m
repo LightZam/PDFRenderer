@@ -81,12 +81,12 @@
 
 - (CGSize) getPageSize: (int)index {
     __block CGSize size = { 0.0, 0.0 };
-    fz_page* page = [self getPage: index];
+    __block fz_page* blockPage = [self getPage: index];
     
     dispatch_sync(queue, ^{
         fz_try(ctx) {
             fz_rect bounds;
-            fz_bound_page(docRef->doc, page, &bounds);
+            fz_bound_page(docRef->doc, blockPage, &bounds);
             size.width = bounds.x1 - bounds.x0;
             size.height = bounds.y1 - bounds.y0;
         } fz_catch(ctx) {
@@ -118,7 +118,7 @@
     
     dispatch_async(queue, ^{});
     [self ensureDisplaylists: index];
-    pixmap = [self renderPixmap: pageList pageSize: pageSize patchRect: patchRect];
+    pixmap = [self renderPixmap: pageSize patchRect: patchRect];
     CGDataProviderRelease(imageData);
     imageData = [self createWrappedPixmap: pixmap];
     image = [self newImageWithPixmap: pixmap imageData: imageData];
@@ -164,15 +164,14 @@
     page = [self ensurePageLoaded: index];
     if (!page)
         return;
-
-    if (!pageList) {
-        pageList = [self createPageList: page];
+    if (pageList) {
+        fz_drop_display_list(ctx, pageList);
+        pageList = nil;
     }
-//    if (!annot_list)
-//        annot_list = create_annot_list(doc, page);
+    pageList = [self createPageList: page];
 }
 
-- (fz_display_list*) createPageList: (fz_page*)page {
+- (fz_display_list*) createPageList: (fz_page*)aPage {
     fz_display_list *list = nil;
     fz_device *dev = nil;
     
@@ -180,13 +179,13 @@
     fz_try(ctx) {
         list = fz_new_display_list(ctx);
         dev = fz_new_list_device(ctx, list);
-        fz_run_page_contents(docRef->doc, page, dev, &fz_identity, nil);
+        fz_run_page_contents(docRef->doc, aPage, dev, &fz_identity, nil);
     } fz_always(ctx) {
         fz_free_device(dev);
     } fz_catch(ctx) {
         return nil;
     }
-    
+
     return list;
 }
 
@@ -203,15 +202,6 @@
     
     return pix;
 }
-
-//- (CGSize) fitPageToScreen: (CGSize)page screenSize: (CGSize)screen {
-//    float hscale = screen.width / page.width;
-//    float vscale = screen.height / page.height;
-//    float scale = fz_min(hscale, vscale);
-//    hscale = floorf(page.width * scale) / page.width;
-//    vscale = floorf(page.height * scale) / page.height;
-//    return CGSizeMake(hscale, vscale);
-//}
 
 static void releasePixmap(void *info, const void *data, size_t size) {
     if (queue) {
@@ -246,7 +236,7 @@ static void releasePixmap(void *info, const void *data, size_t size) {
     return image;
 }
 
-- (fz_pixmap*) renderPixmap: (fz_display_list*)pageList pageSize: (CGSize)pageSize patchRect: (CGRect)patchRect {
+- (fz_pixmap*) renderPixmap: (CGSize)pageSize patchRect: (CGRect)patchRect {
     fz_irect bbox;
     fz_rect rect;
     fz_matrix ctm;
@@ -268,11 +258,13 @@ static void releasePixmap(void *info, const void *data, size_t size) {
         pix = fz_new_pixmap_with_bbox(ctx, fz_device_rgb(ctx), &bbox);
         fz_clear_pixmap_with_value(ctx, pix, 255);
         dev = fz_new_draw_device(ctx, pix);
-        fz_run_display_list(pageList, dev, &ctm, &rect, nil);
+        if (pageList) {
+            fz_run_display_list(pageList, dev, &ctm, &rect, nil);
+        }
     } fz_always(ctx) {
         fz_free_device(dev);
-    } fz_catch(ctx) {
         fz_drop_pixmap(ctx, pix);
+    } fz_catch(ctx) {
         return nil;
     }
     
