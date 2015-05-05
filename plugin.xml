@@ -84,14 +84,14 @@ iOS Notice:
              <string></string>
          </config-file>
 
-        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libcurl.a" compiler-flags="armv7" framework="true"/>
-        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libfreetype.a" compiler-flags="armv7" framework="true"/>
-        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libjbig2dec.a" compiler-flags="armv7" framework="true"/>
-        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libjpeg.a" compiler-flags="armv7" framework="true"/>
-        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libmujs.a" compiler-flags="armv7" framework="true"/>
-        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libmupdf.a" compiler-flags="armv7" framework="true"/>
-        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libopenjpeg.a" compiler-flags="armv7" framework="true"/>
-        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libz.a" compiler-flags="armv7" framework="true"/>
+        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libcurl.a" framework="true"/>
+        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libfreetype.a" framework="true"/>
+        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libjbig2dec.a" framework="true"/>
+        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libjpeg.a" framework="true"/>
+        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libmujs.a" framework="true"/>
+        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libmupdf.a" framework="true"/>
+        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libopenjpeg.a" framework="true"/>
+        <source-file src="libs/ios/armv7-arm64/armv7-arm64-libz.a" framework="true"/>
 
         <source-file src="libs/ios/i386-x86_64/i386-x86_64-libcurl.a" framework="true"/>
         <source-file src="libs/ios/i386-x86_64/i386-x86_64-libfreetype.a" framework="true"/>
