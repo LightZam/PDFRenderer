@@ -236,7 +236,7 @@ static void releasePixmap(void *info, const void *data, size_t size) {
     return image;
 }
 
-- (fz_pixmap*) renderPixmap:(int)index (CGSize)pageSize patchRect: (CGRect)patchRect {
+- (fz_pixmap*) renderPixmap:(int)index pageSize: (CGSize)pageSize patchRect: (CGRect)patchRect {
     fz_irect bbox;
     fz_rect rect;
     fz_matrix ctm;
@@ -265,7 +265,6 @@ static void releasePixmap(void *info, const void *data, size_t size) {
     } fz_always(ctx) {
         fz_free_device(dev);
         dev = nil;
-        fz_drop_pixmap(ctx, pix);
     } fz_catch(ctx) {
         return nil;
     }
