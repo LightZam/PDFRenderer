@@ -11,6 +11,37 @@
 #include "mupdf/pdf.h"
 #include "dispatch/dispatch.h"
 #import "PDFRendererCore.h"
+//#import "mach/mach.h"
+//
+//vm_size_t usedMemory(void) {
+//    struct task_basic_info info;
+//    mach_msg_type_number_t size = sizeof(info);
+//    kern_return_t kerr = task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&info, &size);
+//    return (kerr == KERN_SUCCESS) ? info.resident_size : 0; // size in bytes
+//}
+//
+//vm_size_t freeMemory(void) {
+//    mach_port_t host_port = mach_host_self();
+//    mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);
+//    vm_size_t pagesize;
+//    vm_statistics_data_t vm_stat;
+//    
+//    host_page_size(host_port, &pagesize);
+//    (void) host_statistics(host_port, HOST_VM_INFO, (host_info_t)&vm_stat, &host_size);
+//    return vm_stat.free_count * pagesize;
+//}
+//
+//void logMemUsage(void) {
+//    // compute memory usage and log if different by >= 100k
+//    static long prevMemUsage = 0;
+//    long curMemUsage = usedMemory();
+//    long memUsageDiff = curMemUsage - prevMemUsage;
+//    
+//    if (memUsageDiff > 100000 || memUsageDiff < -100000) {
+//        prevMemUsage = curMemUsage;
+//        NSLog(@"Memory used %7.1f MB(%+5.0f), free %7.1f MB", curMemUsage/8000000.0f, memUsageDiff/1000.0f, freeMemory()/8000000.0f);
+//    }
+//}
 
 @implementation PDFRendererCore
 
@@ -47,20 +78,20 @@
 
 - (void) closeFile {
     dispatch_sync(queue, ^{});
-    if (pageList != nil) {
+    if (pageList) {
         fz_drop_display_list(ctx, pageList);
         pageList = nil;
     }
-    if (page != nil) {
+    if (page) {
         fz_free_page(docRef->doc, page);
         page = nil;
     }
-    if (docRef != nil) {
+    if (docRef) {
         fz_close_document(docRef->doc);
         docRef->doc = nil;
         docRef = nil;
     }
-    if (ctx != nil) {
+    if (ctx) {
         fz_free_context(ctx);
         ctx = nil;
     }
@@ -68,7 +99,6 @@
 
 - (NSInteger) countPages {
     __block NSInteger pages = 0;
-    
     dispatch_sync(queue, ^{
         fz_try(ctx) {
             pages = fz_count_pages(docRef->doc);
@@ -81,48 +111,53 @@
 
 - (CGSize) getPageSize: (int)index {
     __block CGSize size = { 0.0, 0.0 };
-    __block fz_page* blockPage = [self getPage: index];
-    
     dispatch_sync(queue, ^{
+        fz_page* aPage = [self getPage: index];
         fz_try(ctx) {
             fz_rect bounds;
-            fz_bound_page(docRef->doc, blockPage, &bounds);
+            fz_bound_page(docRef->doc, aPage, &bounds);
             size.width = bounds.x1 - bounds.x0;
             size.height = bounds.y1 - bounds.y0;
         } fz_catch(ctx) {
             printf("Failed to find page bounds\n");
         }
     });
-    
     return size;
 }
 
 - (BOOL) needsPassword {
+    dispatch_sync(queue, ^{});
     return fz_needs_password(docRef->doc);
 }
 
 - (BOOL) authenticatePassword: (char*)password {
+    dispatch_sync(queue, ^{});
     return fz_authenticate_password(docRef->doc, password);
 }
 
 - (BOOL) isFileOpen {
+    dispatch_sync(queue, ^{});
     return ctx != nil && [self countPages] > 0;
 }
 
 - (UIImage*) drawPage: (int)index pageSize: (CGSize)pageSize patchRect: (CGRect)patchRect {
-    if (index < 0 || index >= fz_count_pages(docRef->doc))
-        return nil;
-    UIImage* image = nil;
-    CGDataProviderRef imageData = nil;
+    if (index < 0) {
+        index = 0;
+    } else if (index >= [self countPages]) {
+        index = [self countPages] - 1;
+    }
+    __block UIImage* image = nil;
+    __block CGDataProviderRef imageData = nil;
     fz_pixmap* pixmap = nil;
     
-    dispatch_async(queue, ^{});
     [self ensureDisplaylists: index];
     pixmap = [self renderPixmap:index pageSize: pageSize patchRect: patchRect];
-    CGDataProviderRelease(imageData);
-    imageData = [self createWrappedPixmap: pixmap];
-    image = [self newImageWithPixmap: pixmap imageData: imageData];
-
+    dispatch_sync(queue, ^{
+        CGDataProviderRelease(imageData);
+        imageData = [self createWrappedPixmap: pixmap];
+        image = [self newImageWithPixmap: pixmap imageData: imageData];
+    });
+//    logMemUsage();
     return image;
 }
 
@@ -131,76 +166,64 @@
  * private method
  * --------------------
  */
+// load fz_page
 - (fz_page*) getPage: (int)index {
-    __block fz_page* blockPage = nil;
-    
+    fz_page* aPage = nil;
+    fz_try(ctx) {
+        aPage = fz_load_page(docRef->doc, index);
+    } fz_catch(ctx) {
+        printf("Failed to load page\n");
+    }
+    return aPage;
+}
+
+// make sure page will be loaded
+- (void) ensurePageLoaded: (int)index {
     dispatch_sync(queue, ^{
         fz_try(ctx) {
-            blockPage = fz_load_page(docRef->doc, index);
+            fz_rect bounds;
+            if (page) {
+                fz_free_page(docRef->doc, page);
+                page = nil;
+            }
+            page = [self getPage: index];
+            fz_bound_page(docRef->doc, page, &bounds);
         } fz_catch(ctx) {
-            printf("Failed to load page\n");
+            printf("no page had been loaded\n");
         }
     });
-
-    return blockPage;
 }
 
-- (fz_page*) ensurePageLoaded: (int)index {
-    fz_try(ctx) {
-        fz_rect bounds;
-        if (page) {
-            fz_free_page(docRef->doc, page);
-            page = nil;
-        }
-        page = [self getPage: index];
-        fz_bound_page(docRef->doc, page, &bounds);
-    } fz_catch(ctx) {
-        return nil;
-    }
-    return page;
-}
-
+// make sure page display list will be loaded
 - (void) ensureDisplaylists: (int)index {
-    page = [self ensurePageLoaded: index];
+    dispatch_sync(queue, ^{});
+    [self ensurePageLoaded: index];
     if (!page)
         return;
-    if (pageList) {
-        fz_drop_display_list(ctx, pageList);
-        pageList = nil;
-    }
-    pageList = [self createPageList: page];
+    dispatch_sync(queue, ^{
+        if (pageList) {
+            fz_drop_display_list(ctx, pageList);
+            pageList = nil;
+        }
+        [self createPageList: page];
+    });
 }
 
-- (fz_display_list*) createPageList: (fz_page*)aPage {
-    fz_display_list *list = nil;
+// create page content
+- (void) createPageList: (fz_page*)aPage {
     fz_device *dev = nil;
-    
     fz_var(dev);
+    fz_var(pageList);
     fz_try(ctx) {
-        list = fz_new_display_list(ctx);
-        dev = fz_new_list_device(ctx, list);
+        pageList = fz_new_display_list(ctx);
+        dev = fz_new_list_device(ctx, pageList);
         fz_run_page_contents(docRef->doc, aPage, dev, &fz_identity, nil);
     } fz_always(ctx) {
         fz_free_device(dev);
+        dev = nil;
     } fz_catch(ctx) {
-        return nil;
+        printf("Fail to create page contents.\n");
     }
-
-    return list;
-}
-
-- (fz_pixmap*) createPixMap: (CGSize)size {
-    __block fz_pixmap *pix = nil;
-    
-    dispatch_sync(queue, ^{
-        fz_try(ctx) {
-            pix = fz_new_pixmap(ctx, fz_device_rgb(ctx), size.width, size.height);
-        } fz_catch(ctx) {
-            printf("Failed to create pixmap\n");
-        }
-    });
-    
-    return pix;
 }
 
 static void releasePixmap(void *info, const void *data, size_t size) {
@@ -233,15 +256,17 @@ static void releasePixmap(void *info, const void *data, size_t size) {
     CGImageRef cgimage = [self createCGImageWithPixmap: pix data: cgdata];
     UIImage *image = [[UIImage alloc] initWithCGImage: cgimage scale: screenScale orientation: UIImageOrientationUp];
     CGImageRelease(cgimage);
+    CGDataProviderRelease(cgdata);
     return image;
 }
 
+// render page content to pixmap
 - (fz_pixmap*) renderPixmap:(int)index pageSize: (CGSize)pageSize patchRect: (CGRect)patchRect {
+    __block fz_device *dev = nil;
+    __block fz_pixmap *pix = nil;
     fz_irect bbox;
     fz_rect rect;
     fz_matrix ctm;
-    fz_device *dev = nil;
-    fz_pixmap *pix = nil;
     
     bbox.x0 = patchRect.origin.x;
     bbox.y0 = patchRect.origin.y;
@@ -252,23 +277,23 @@ static void releasePixmap(void *info, const void *data, size_t size) {
     float sy = pageSize.height / size.height;
     fz_scale(&ctm, sx, sy);
     fz_rect_from_irect(&rect, &bbox);
-    
-    fz_var(dev);
-    fz_var(pix);
-    fz_try(ctx) {
-        pix = fz_new_pixmap_with_bbox(ctx, fz_device_rgb(ctx), &bbox);
-        fz_clear_pixmap_with_value(ctx, pix, 255);
-        dev = fz_new_draw_device(ctx, pix);
-        if (pageList) {
-            fz_run_display_list(pageList, dev, &ctm, &rect, nil);
+    dispatch_sync(queue, ^{
+        fz_var(dev);
+        fz_var(pix);
+        fz_try(ctx) {
+            pix = fz_new_pixmap_with_bbox(ctx, fz_device_rgb(ctx), &bbox);
+            fz_clear_pixmap_with_value(ctx, pix, 255);
+            dev = fz_new_draw_device(ctx, pix);
+            if (pageList) {
+                fz_run_display_list(pageList, dev, &ctm, &rect, nil);
+            }
+        } fz_always(ctx) {
+            fz_free_device(dev);
+            dev = nil;
+        } fz_catch(ctx) {
+            fz_drop_pixmap(ctx, pix);
         }
-    } fz_always(ctx) {
-        fz_free_device(dev);
-        dev = nil;
-    } fz_catch(ctx) {
-        return nil;
-    }
-    
+    });
     return pix;
 }
 
