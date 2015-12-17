@@ -1,67 +1,262 @@
-## PDFRenderer
-### 0.0.1-dev
-* How to build library
-	* Prerequires
-		1. minNDK = `ndk-r10d`
-		2. build muPDF `reference: http://www.mupdf.com/docs/how-to-build-mupdf-for-android`
-	* Android
-		* create new cordova project
-		* copy muPDF source to PDFRenderer
-			- resources
-			- scripts
-			- thirdparty
-			- source
-		* unmark PDFRenderer jni directory under plugin.xml
-		* install PDFRenderer
-			- cordova plugin add {PDFRenderer path}
-		* add native support (usgin eclipse)
-		* build project (using eclipse)
-	* iOS
-		* using muPDF iOS native app to build library by xcode 
-* 0.0.1-dev tests
-	* Only Android for now
-	* Prerequires
-		1. install cordova-test-framework
-			- cordova plugin add https://github.com/apache/cordova-plugin-test-framework.git
-		2. install PDFRenderer tests 
-			- cordova plugin add {PDFRenderer path}/tests
-		3. Get Ready a file with name: PDFRendererTest.pdf and password 1234
-		4. Put file to /storage/emulated/0/Download/PDFRendererTest.pdf
-		5. change the config.xml to cdvtests/index.html
-	* Step
-		1. cordova run android
-		2. see the phone or emulator running result
+# PDFRenderer
 
-### 0.0.2-dev
-* release note
-	* it can use your own custom path now
-	* iOS
-		* fix error cause by new version swift sdk
-	* 0.0.2-dev tests
-		* add test to new functionality
+------------------------------------------
 
+* Constant
+  * DestinationType
+  * EncodingType
+  * OpenType
+* API
+	* open(success, fail, options)
+	* close(success, fail)
+	* getPage(success, fail, options)
+	* getPDFInfo(success, fail)
+	* getPageInfo(success, fail, pageNumber)
+	* changePreference(preference)
+* Quick Example
+	* Example 1
 
-### 0.0.3-dev
-* release note
-	* change the system path to internal storage
-	* 0.0.3-dev tests
-		* update test
+------------------------------------------
 
-### 0.0.4-dev
-* release note
-	* Android
-		* fix memory usage overhead at bitmap
-	* iOS
-		*  add ipad support
-		*  simplify the install step
-		*  
-### 0.0.5-dev
-* release note
-	* iOS
-		* fix zoom in/out
+# Constant
+## DestinationType
+```javascript
+	{
+		DATA_BIN,		// Return ArrayBuffer 
+		DATA_URL,		// Return base64 encoded string
+		FILE_URI		// Return file path in native way
+	}
+	
+	// example
+	PDFRenderer.DestinationType.FILE_URI
+```
+		
+## EncodingType
+```javascript
+	{
+		JPEG,			// Return JPEG encoded image
+		PNG				// Return PNG encoded image
+	}
+		
+	// example
+	PDFRenderer.EncodingType.JPEG
+```
+		
+## OpenType
+```javascript
+	{
+		PATH,			// PDF path
+		BUFFER			// PDF arraybuffer
+	}
+	
+	// example
+	PDFRenderer.OpenType.PATH
+```	
 
-### 0.0.6-dev
-* release note
-	* iOS
-		* fix return same page bug
-		* fix zoom in/out bug
+------------------------------------------
+
+# API
+## open(success, fail, options)
+* The example openFileObj's openType is default setting
+	* you don't nedd to pass openType and password except you want oepn from array buffer or password protected PDF.
+* Every thing should be done after PDF opened.
+
+### Parameters
+Parameter | Type | Default | Description
+--------- | ---- | ------- | -----------
+`success` | `Function` || success callbcak
+`fail` | `Function` || fail callback
+`options` | `Object` | `{}` | An object describing relevant specific options.
+
+###### options detail
+
+Attribute | Type | Default | Description
+--------- | ---- | ------- | -----------
+`content` | `string` | | Path or ArrayBuffer
+`openType` | `PDFRenderer.OpenType` | `OpenType.PATH` | Open from Path or ArrayBuffer
+`password` | `string` | | PDF password
+
+### Success Callback Parameters
+Parameter | Type | Default | Description
+--------- | ---- | ------- | -----------
+`data.numberOfPage` | `int` || PDF page count
+`data.path` | `string` || PDF path
+`data.name` | `string` || PDF name
+
+### Example
+```javascript
+	var openFileObj = {
+		content: 'PDFRendererTest.pdf',
+    	openType: PDFRenderer.OpenType.PATH,
+    	password: '123'
+    };
+	PDFRenderer.open(function successCallBack(data) {
+		// data.numberOfPage
+		// data.path
+		// data.name
+    	// do your stuff, start to getPage or something
+    }, failCallBack, openFileObj);
+```
+
+## close(success, fail)
+* close PDF when you finish.
+
+### Parameters
+Parameter | Type | Default | Description
+--------- | ---- | ------- | -----------
+`success` | `Function` || success callbcak
+`fail` | `Function` || fail callback
+
+### Example
+```javascript
+	PDFRenderer.close(successCallback, failCallback);
+```
+
+## getPage(success, fail, options)
+* get image from PDF
+
+### Parameters
+Parameter | Type | Default | Description
+--------- | ---- | ------- | -----------
+`success` | `Function` || success callbcak
+`fail` | `Function` || fail callback
+`options` | `Object` | `{}` | An object describing relevant specific options.
+
+###### options detail
+
+**PatchX, PatchY, PatchWidth, PatchHeight means you want to get a cut block from image.**
+
+Attribute | Type | Default | Description
+--------- | ---- | ------- | -----------
+`page` | `int` | | which page image
+`width` | `PDFRenderer.OpenType` | `OpenType.PATH` | Image width
+`height` | `int` | | Image height
+`patchX` | `int` | | Patch x from image
+`patchY` | `int` | | Patch y from image
+`patchWidth` | `int` | | Patch width
+`patchHeight` | `int` | | Patch height
+`quality` | `int` | 100 | Image quality
+`encodingType` | `PDFRenderer.EncondingType` | EncondingType.JPEG | 
+`destinationType` | `PDFRenderer.DestinationType` | DestinationType.BIN | PDF type
+`destinationPath` | `string` | | PDF path
+	
+### Success Callback Parameters
+Parameter | Type | Default | Description
+--------- | ---- | ------- | -----------
+`data` | `string` || File path or base64 or arraybuffer
+	
+### Example
+```javascript
+	var options = {
+		page: 1,
+		width: 800,
+		height: 600,
+		patchX: 0,
+		patchY: 0,
+		patchWidth: 800,
+		patchHeight: 600,
+		quality: 100,
+		encodingType: EncodingType.JPEG,
+		destinationType: DestinationType.FILE_URI,
+		destinationPath: '/PDF/example'
+	};
+	PDFRenderer.getPage(function successCallback(data) {
+		// data
+	}, failCallback, options);
+```
+    
+## getPDFInfo(success, fail)
+* The PDF info
+
+### Success Callback Parameters
+Parameter | Type | Default | Description
+--------- | ---- | ------- | -----------
+`data.numberOfPage` | `int` || PDF page count
+`data.path` | `string` || PDF path
+`data.name` | `string` || PDF name
+
+### Example
+```javascript
+	PDFRenderer.getPDFInfo(function successCallback(data) {
+    	// data.numberOfPage
+    	// data.path
+    	// data.name
+    }, failCallback);	
+```
+
+## getPageInfo(success, fail, pageNumber)
+* get page info by giving page number
+		
+### Success Callback Parameters
+Parameter | Type | Default | Description
+--------- | ---- | ------- | -----------
+`data.numberOfPage` | `int` || PDF page count
+`data.width` | `int` || Page width
+`data.height` | `int` || Page height
+
+### Example
+```javascript
+	var pageNumber = 1;
+	PDFRenderer.getPageInfo(function successCallback(data) {
+    	// data.numberOfPage
+    	// data.width
+    	// data.height
+    }, failCallback, pageNumber);
+```
+
+## changePreference(preference)
+* The example preference is default setting, you can change it youself.
+	
+### Parameters
+Parameter | Type | Default | Description
+--------- | ---- | ------- | -----------
+`preference ` | `Object` |`{}`| success callbcak
+
+###### options detail
+
+Attribute | Type | Default | Description
+--------- | ---- | ------- | -----------
+`openType ` | `PDFRenderer.OpenType` | `OpenType.PATH` | Open from Path or ArrayBuffer
+`quality ` | `int` | `100` | Image quality
+`encodingType ` | `PDFRenderer.EncodingType` | `EncodingType.JPEG ` | Image format
+`destinationType ` | `PDFRenderer.DestinationType` | `DestinationType.DATA_BIN` | PDF type 
+`destinationPath ` | `string` | | PDF path.
+
+	
+### Example
+```javascript
+	var preference = {
+		openType: PDFRenderer.OpenType.PATH,
+		quality: 100,
+		encodingType: PDFRenderer.EncodingType.JPEG,
+		destinationType: PDFRenderer.DestinationType.DATA_BIN,
+		destinationPath: ''
+	};
+	PDFRenderer.changePreference(preference);
+```
+
+# Quick Example
+
+## Example 1: 
+
+```javascript
+	function fail(e) {
+    	console.log(e);
+    };
+	PDFRenderer.open(function(pdf) {
+		console.log('PDF Info: ', pdf.name, pdf.path);
+		var i = pdf.numberOfPage,
+			success = function(data) {
+				console.log('Image output path', data);
+			};
+    	while (i-- > 0) {
+			PDFRenderer.getPage(success, fail, {
+				page: i,
+				destinationType: PDFRenderer.DestinationType.FILE_URI
+			});
+    	} 
+    	
+    }, fail, {
+		content: 'PDFRendererTest.pdf'
+    });
+```

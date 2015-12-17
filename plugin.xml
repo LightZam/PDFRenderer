@@ -64,6 +64,7 @@ iOS Notice:
     3. add `[../../plugins/com.gss.pdfrenderer/include]` 
         to UserHeader Search Paths 
         under the Build Settings > Search Paths
+    4. disable bitcode in Build Settings > Build Options > Bitcode
          </info>
          <config-file target="config.xml" parent="/*">
              <feature name="PDFRenderer">
