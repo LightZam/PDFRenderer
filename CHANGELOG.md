@@ -65,3 +65,10 @@
 	* iOS
 		* fix return same page bug
 		* fix zoom in/out bug
+
+### 0.0.6-dev
+* release note
+	* iOS
+		* fix getPage return output path bug
+		* swift code update
+		* add readme document
