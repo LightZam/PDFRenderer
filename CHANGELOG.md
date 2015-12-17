@@ -66,7 +66,7 @@
 		* fix return same page bug
 		* fix zoom in/out bug
 
-### 0.0.6-dev
+### 0.0.7-dev
 * release note
 	* iOS
 		* fix getPage return output path bug
