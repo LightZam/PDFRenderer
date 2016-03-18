@@ -231,7 +231,7 @@ class PDFRenderer : CDVPlugin {
             let path = content as! String
             self.pdfName = self.getFileName(path)
             self.pdfPath = path
-            let nspath = SystemPath + "/" + path
+            let nspath = path
             var cPath = nspath.cStringUsingEncoding(NSUTF8StringEncoding)!
             if !self.core!.openFile(&cPath) {
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Can not open document.")
