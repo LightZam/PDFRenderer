@@ -72,3 +72,8 @@
 		* fix getPage return output path bug
 		* swift code update
 		* add readme document
+
+### 0.0.8
+* release note
+	* iOS
+		* fix cordova ios 4.0.1 bugs and depreciated method
