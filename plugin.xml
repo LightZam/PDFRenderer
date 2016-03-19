@@ -2,20 +2,20 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.gss.pdfrenderer"
-    version="0.0.8">
+    version="0.0.9">
     <name>PDFRenderer</name>
     <description>Cordova PDF Renderer Plugin using MuPDF</description>
     <keywords>cordova, mupdf, pdf, render</keywords>
-    
-    
+
+
     <js-module src="www/PDFRendererConstants.js" name="PDFRendererConstants">
         <clobbers target="PDFRenderer" />
     </js-module>
-    
+
     <js-module src="www/PDFRenderer.js" name="PDFRenderer">
         <merges target="PDFRenderer" />
     </js-module>
-    
+
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
@@ -40,15 +40,15 @@
         <source-file src="src/android/TextChar.java" target-dir="src/com/gss/pdfrenderer" />
         <source-file src="src/android/TextWord.java" target-dir="src/com/gss/pdfrenderer" />
         <source-file src="src/android/WidgetType.java" target-dir="src/com/gss/pdfrenderer" />
-		
+
 		<!-- unmark this if you want to build your own lib -->
 <!-- 		<source-file src="jni/Android.mk" target-dir="jni" />
 		<source-file src="jni/Application.mk" target-dir="jni" />
 		<source-file src="jni/Core.mk" target-dir="jni" />
 		<source-file src="jni/ThirdParty.mk" target-dir="jni" />
 		<source-file src="jni/mupdf.c" target-dir="jni" /> -->
-		
-		
+
+
         <source-file src="libs/android/armeabi-v7a/libmupdf.so" target-dir="libs/armeabi-v7a" />
         <source-file src="libs/android/x86/libmupdf.so" target-dir="libs/x86" />
      </platform>
@@ -57,14 +57,15 @@
      <platform name="ios">
          <info>
 iOS Notice:
-    1. open xcode go into settings change `deployment target` to 7.0 or above
-    2. add `{Project Name}/Plugins/com.gss.pdfrenderer/PDFRenderer-Bridging-Header.h` 
-        to Objective-c Bridging Header 
+    1. open xcode go into settings change `deployment target` to 7.0 or heigher
+    2. add `$(PROJECT_DIR)/$(PROJECT_NAME)/Plugins/com.gss.pdfrenderer/PDFRenderer-Bridging-Header.h`
+        to Objective-c Bridging Header
         under the Build Settings > Swift Compiler - Code Generation options
-    3. add `[../../plugins/com.gss.pdfrenderer/include]` 
-        to UserHeader Search Paths 
+    3. add `[../../plugins/com.gss.pdfrenderer/include]`
+        to UserHeader Search Paths
         under the Build Settings > Search Paths
     4. disable bitcode in Build Settings > Build Options > Bitcode
+    5. if you still have problem about cordova build ios (error: use of undeclared type 'PDFRendererCore'), try copy PDFRenderer-Bridging-Header.h's code to Bridging-Header.h
          </info>
          <config-file target="config.xml" parent="/*">
              <feature name="PDFRenderer">
@@ -72,7 +73,7 @@ iOS Notice:
                  <param name="onload" value="true" />
              </feature>
          </config-file>
-         
+
          <header-file src="src/ios/Common.h" />
          <source-file src="src/ios/Common.m" />
          <header-file src="src/ios/MuDocRef.h" />

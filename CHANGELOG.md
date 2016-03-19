@@ -77,3 +77,9 @@
 * release note
 	* iOS
 		* fix cordova ios 4.0.1 bugs and depreciated method
+		
+### 0.0.9
+* release note
+	* iOS
+		* fix cordova ios getPage by FILE_URI
+		* add ios note in plugin.xml
