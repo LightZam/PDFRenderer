@@ -50,11 +50,11 @@ pdfRendererExport.open = function(successCallback, errorCallback, options) {
 	argscheck.checkArgs('FFO', 'PDFRenderer.open', arguments);
     options = options || {};
     var getValue = argscheck.getValue;
-    
+
     var content = getValue(options.content, ""),
     	openType = getValue(options.openType, preference.openType),
     	password = getValue(options.password, "");
-    
+
     var args = [content, openType, password];
     exec(successCallback, errorCallback, GSS_PDFRenderer, "open", args);
 };
@@ -67,7 +67,7 @@ pdfRendererExport.getPage = function(successCallback, errorCallback, options) {
 	argscheck.checkArgs('FFO', 'PDFRenderer.getPage', arguments);
 	options = options || {};
 	var getValue = argscheck.getValue;
-  
+
 	var page = getValue(options.page, 0),
 		width = getValue(options.width, -1),
 		height = getValue(options.height, -1),
@@ -79,7 +79,7 @@ pdfRendererExport.getPage = function(successCallback, errorCallback, options) {
 		encodingType = getValue(options.encodingType, preference.encodingType),
 		destinationType = getValue(options.destinationType, preference.destinationType),
 		destinationPath = getValue(options.destinationPath, preference.destinationPath);
-	
+
 	var args = [page, width, height, patchX, patchY, patchWidth, patchHeight, quality, encodingType, destinationType, destinationPath];
     exec(successCallback, errorCallback, GSS_PDFRenderer, "getPage", args);
 };

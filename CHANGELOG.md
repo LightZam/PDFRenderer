@@ -1,4 +1,63 @@
 ## PDFRenderer
+### 0.0.10
+* release note
+	* iOS
+		* refactor PDFRenderer.swift
+	* Other
+		* add Build lib instruction md
+		* add run test instruction md
+
+### 0.0.9
+* release note
+	* iOS
+		* fix cordova ios getPage by FILE_URI
+		* add ios note in plugin.xml
+
+### 0.0.8
+* release note
+	* iOS
+		* fix cordova ios 4.0.1 bugs and depreciated method
+
+### 0.0.7-dev
+* release note
+	* iOS
+		* fix getPage return output path bug
+		* swift code update
+		* add readme document
+
+### 0.0.6-dev
+* release note
+	* iOS
+		* fix return same page bug
+		* fix zoom in/out bug
+
+### 0.0.5-dev
+* release note
+	* iOS
+		* fix zoom in/out
+
+### 0.0.4-dev
+* release note
+	* Android
+		* fix memory usage overhead at bitmap
+	* iOS
+		*  add ipad support
+		*  simplify the install step
+
+### 0.0.3-dev
+* release note
+	* change the system path to internal storage
+	* 0.0.3-dev tests
+		* update test
+
+### 0.0.2-dev
+* release note
+	* it can use your own custom path now
+	* iOS
+		* fix error cause by new version swift sdk
+	* 0.0.2-dev tests
+		* add test to new functionality
+
 ### 0.0.1-dev
 * How to build library
 	* Prerequires
@@ -32,54 +91,4 @@
 		1. cordova run android
 		2. see the phone or emulator running result
 
-### 0.0.2-dev
-* release note
-	* it can use your own custom path now
-	* iOS
-		* fix error cause by new version swift sdk
-	* 0.0.2-dev tests
-		* add test to new functionality
-
-
-### 0.0.3-dev
-* release note
-	* change the system path to internal storage
-	* 0.0.3-dev tests
-		* update test
-
-### 0.0.4-dev
-* release note
-	* Android
-		* fix memory usage overhead at bitmap
-	* iOS
-		*  add ipad support
-		*  simplify the install step
-		*  
-### 0.0.5-dev
-* release note
-	* iOS
-		* fix zoom in/out
-
-### 0.0.6-dev
-* release note
-	* iOS
-		* fix return same page bug
-		* fix zoom in/out bug
-
-### 0.0.7-dev
-* release note
-	* iOS
-		* fix getPage return output path bug
-		* swift code update
-		* add readme document
-
-### 0.0.8
-* release note
-	* iOS
-		* fix cordova ios 4.0.1 bugs and depreciated method
 		
-### 0.0.9
-* release note
-	* iOS
-		* fix cordova ios getPage by FILE_URI
-		* add ios note in plugin.xml
