@@ -129,12 +129,12 @@ Parameter | Type | Default | Description
 Attribute | Type | Default | Description
 --------- | ---- | ------- | -----------
 `page` | `int` | | which page image
-`width` | `int` | `` | Image width
-`height` | `int` | | Image height
-`patchX` | `int` | | Patch x from image
-`patchY` | `int` | | Patch y from image
-`patchWidth` | `int` | | Patch width
-`patchHeight` | `int` | | Patch height
+`width` | `int` | page width | Image width
+`height` | `int` | page height | Image height
+`patchX` | `int` | 0 | Patch x from image
+`patchY` | `int` | 0 | Patch y from image
+`patchWidth` | `int` | width | Patch width
+`patchHeight` | `int` | height | Patch height
 `quality` | `int` | 100 | Image quality
 `encodingType` | `PDFRenderer.EncondingType` | EncondingType.JPEG | 
 `destinationType` | `PDFRenderer.DestinationType` | DestinationType.BIN | PDF type
