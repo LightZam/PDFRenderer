@@ -129,7 +129,7 @@ Parameter | Type | Default | Description
 Attribute | Type | Default | Description
 --------- | ---- | ------- | -----------
 `page` | `int` | | which page image
-`width` | `PDFRenderer.OpenType` | `OpenType.PATH` | Image width
+`width` | `int` | `` | Image width
 `height` | `int` | | Image height
 `patchX` | `int` | | Patch x from image
 `patchY` | `int` | | Patch y from image
