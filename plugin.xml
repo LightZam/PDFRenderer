@@ -57,15 +57,8 @@
      <platform name="ios">
          <info>
 iOS Notice:
-    1. open xcode go into settings change `deployment target` to 7.0 or heigher
-    2. add `$(PROJECT_DIR)/$(PROJECT_NAME)/Plugins/com.gss.pdfrenderer/PDFRenderer-Bridging-Header.h`
-        to Objective-c Bridging Header
-        under the Build Settings > Swift Compiler - Code Generation options
-    3. add `[../../plugins/com.gss.pdfrenderer/include]`
-        to UserHeader Search Paths
-        under the Build Settings > Search Paths
-    4. disable bitcode in Build Settings > Build Options > Bitcode
-    5. if you still have problem about cordova build ios (error: use of undeclared type 'PDFRendererCore'), try copy PDFRenderer-Bridging-Header.h's code to Bridging-Header.h
+    1. only supoort 7.0 or heigher
+    2. if you get problem about cordova build ios (e.g. error: use of undeclared type 'PDFRendererCore'), try copy PDFRenderer-Bridging-Header.h's code to Bridging-Header.h
          </info>
          <config-file target="config.xml" parent="/*">
              <feature name="PDFRenderer">
@@ -104,8 +97,13 @@ iOS Notice:
         <source-file src="libs/ios/i386-x86_64/i386-x86_64-libopenjpeg.a" framework="true"/>
         <source-file src="libs/ios/i386-x86_64/i386-x86_64-libz.a" framework="true"/>
 
-         <framework src="AssetsLibrary.framework" />
-         <framework src="MobileCoreServices.framework" />
-         <framework src="CoreGraphics.framework" />
+        <framework src="AssetsLibrary.framework" />
+        <framework src="MobileCoreServices.framework" />
+        <framework src="CoreGraphics.framework" />
+
+        <hook type="after_plugin_add" src="hooks/AddXcodeSetting.js" />
+        <hook type="after_platform_add" src="hooks/AddXcodeSetting.js" />
+        <hook type="before_plugin_uninstall" src="hooks/RemoveXcodeSetting.js" />
+        <hook type="before_platform_rm" src="hooks/RemoveXcodeSetting.js" />
      </platform>
 </plugin>
