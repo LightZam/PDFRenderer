@@ -1,4 +1,10 @@
 ## PDFRenderer
+### 0.0.11
+* release note
+	* iOS
+		* update to support swift 3
+		* add init(webView) for ios@3.9.2, but it should remove in ios@4.0.0 and above
+
 ### 0.0.10
 * release note
 	* iOS
