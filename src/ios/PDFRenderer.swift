@@ -85,6 +85,19 @@ class PDFRenderer : CDVPlugin {
         super.init()
     }
 
+    // Deprecated in ios-4.0.0 and above, must remove this method if you are using version above it.
+    override init(webView theWebView: UIWebView!) {
+        pdfName = ""
+        pdfPath = ""
+        pdfPageCount = 0
+        currentPage = 0
+        customPath = ""
+        SystemPath = ""
+        self.core = PDFRendererCore()
+        self.SystemPath = NSHomeDirectory() + "/Documents"
+        super.init()
+    }
+
     override func pluginInitialize() {
         self.core = PDFRendererCore()
         self.SystemPath = NSHomeDirectory() + "/Documents"
