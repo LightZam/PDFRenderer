@@ -60,7 +60,7 @@ iOS Notice:
     1. open xcode go into settings change `deployment target` to 7.0 or heigher
     2. add `$(PROJECT_DIR)/$(PROJECT_NAME)/Plugins/com.gss.pdfrenderer/PDFRenderer-Bridging-Header.h`
         to Objective-c Bridging Header
-        under the Build Settings > Swift Compiler - Code Generation options
+        under the Build Settings > Swift Compiler - General options
     3. add `[../../plugins/com.gss.pdfrenderer/include]`
         to UserHeader Search Paths
         under the Build Settings > Search Paths
