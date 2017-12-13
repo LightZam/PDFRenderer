@@ -85,25 +85,13 @@ class PDFRenderer : CDVPlugin {
         super.init()
     }
 
-    // Deprecated in ios-4.0.0 and above, must remove this method if you are using version above it.
-    override init(webView theWebView: UIWebView!) {
-        pdfName = ""
-        pdfPath = ""
-        pdfPageCount = 0
-        currentPage = 0
-        customPath = ""
-        SystemPath = ""
-        self.core = PDFRendererCore()
-        self.SystemPath = NSHomeDirectory() + "/Documents"
-        super.init()
-    }
-
     override func pluginInitialize() {
         self.core = PDFRendererCore()
         self.SystemPath = NSHomeDirectory() + "/Documents"
         super.pluginInitialize()
     }
 
+    @objc
     func open(_ command: CDVInvokedUrlCommand) {
         commandDelegate!.run(inBackground: {
             let content: AnyObject = command.arguments[0] as AnyObject
@@ -185,6 +173,7 @@ class PDFRenderer : CDVPlugin {
         return pluginResult
     }
 
+    @objc
     func close(_ command: CDVInvokedUrlCommand) {
         commandDelegate!.run(inBackground: {
             self.closeFile()
@@ -193,6 +182,7 @@ class PDFRenderer : CDVPlugin {
         })
     }
 
+    @objc
     func getPage(_ command: CDVInvokedUrlCommand) {
         commandDelegate!.run(inBackground: {
             if self.sendFailIfFileNotReady(command) {
@@ -262,7 +252,7 @@ class PDFRenderer : CDVPlugin {
         if path[path.startIndex] != "/" {
             path = "/" + path
         }
-        if path[path.characters.index(path.endIndex, offsetBy: -1)] != "/" {
+        if path[path.index(path.endIndex, offsetBy: -1)] != "/" {
             path = path + "/"
         }
         return path
@@ -278,6 +268,7 @@ class PDFRenderer : CDVPlugin {
         }
     }
 
+    @objc
     func getPageInfo(_ command: CDVInvokedUrlCommand) {
         commandDelegate!.run(inBackground: {
             if self.sendFailIfFileNotReady(command) {
@@ -297,6 +288,7 @@ class PDFRenderer : CDVPlugin {
         })
     }
 
+    @objc
     func getPDFInfo(_ command: CDVInvokedUrlCommand) {
         commandDelegate!.run(inBackground: {
             if self.sendFailIfFileNotReady(command) {
@@ -308,6 +300,7 @@ class PDFRenderer : CDVPlugin {
         })
     }
 
+    @objc
     func changePreference(_ command: CDVInvokedUrlCommand) {
         self.customPath = command.arguments[0] as! String
         let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.preparePDFInfo())
@@ -324,11 +317,11 @@ class PDFRenderer : CDVPlugin {
 
     fileprivate func getFileName(_ path: String) -> String {
         if let slashRange = path.range(of: "/") {
-            let pdfName = path.substring(from: slashRange.upperBound)
+            let pdfName = String(path[slashRange.upperBound...])
             return getFileName(pdfName)
         } else {
             if let dotRange = path.range(of: ".") {
-                return path.substring(to: dotRange.lowerBound)
+                return String(path[dotRange.lowerBound...])
             } else {
                 return path
             }
