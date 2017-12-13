@@ -1,0 +1,28 @@
+{
+  "name": "pdfrenderer",
+  "version": "1.0.0",
+  "description": "Cordova PDF Renderer Plugin using MuPDF",
+  "main": "PDFRenderer.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "xcode": "^0.8.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.gss.com.tw:crd/PDFRenderer.git"
+  },
+  "keywords": [
+    "cordova",
+    "mupdf",
+    "pdf",
+    "render"
+  ],
+  "author": "Zam Huang",
+  "license": "MIT"
+}

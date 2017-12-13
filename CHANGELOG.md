@@ -1,4 +1,11 @@
 ## PDFRenderer
+### 1.0.0
+* release note
+	* iOS
+		* support swift 4.0
+		* support Cordova 7.1
+		* only support version above ios@4.0.0
+
 ### 0.0.11
 * release note
 	* iOS
